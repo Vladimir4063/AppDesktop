@@ -5,7 +5,6 @@ from tkinter import *
 
 #modulo de conexion
 import sqlite3
-from typing import Collection
 
 class Product:
 
@@ -31,7 +30,7 @@ class Product:
         self.price.grid(row=2, column=1)
 
         #Button add product
-        ttk.Button(frame, text='Save product').grid(row=3, columnspan=2, sticky= W + E)
+        ttk.Button(frame, text='Save product', command= self.add_product).grid(row=3, columnspan=2, sticky= W + E)
 
         #Table - dos grillas
         self.tree = ttk.Treeview(height=10, columns=2)
@@ -52,12 +51,31 @@ class Product:
         return result
 
     def get_products(self):
+        #cleaning table
+        records = self.tree.get_children()
+        for element in records:
+            self.tree.delete(element)
+
+        #quering data
         query ='SELECT * FROM product ORDER BY name DESC'
         db_rows = self.run_query(query)
-        print(db_rows)
+
+        #filling data
+        for row in db_rows:
+            self.tree.insert('', 0, text= row[1], values= row[2])
+
+    def validation(self):
+        return len(self.name.get()) != 0 and len(self.price.get()) != 0
+
+
+    def add_product(self):
+        if self.validation():
+            print(self.name.get())
+            print(self.price.get())
+        else:
+            print("Name and price required")
         
 if __name__ == '__main__':
-    
     window = Tk()
     application = Product(window)
     window.mainloop()
